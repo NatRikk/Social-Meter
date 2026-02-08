@@ -83,7 +83,7 @@
 
   async function main() {
     try {
-      const res = await fetch(SHEET_CSV_URL, { cache: "no-store" });
+      const res = await fetch(`${SHEET_CSV_URL}&_=${Date.now()}`, { cache: "no-store" });
       const csv = await res.text();
       const data = parseCsvTwoCols(csv);
 
