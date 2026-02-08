@@ -42,14 +42,13 @@
   ];
 
   function parseCsvTwoCols(csvText) {
-    // expects rows like: mood,3
     const lines = csvText.trim().split(/\r?\n/);
     const map = {};
     for (const line of lines) {
       const parts = line.split(",");
       if (parts.length >= 2) {
         const key = parts[0].trim();
-        const value = parts.slice(1).join(",").trim(); // allows commas in note
+        const value = parts.slice(1).join(",").trim();
         map[key] = value;
       }
     }
@@ -90,16 +89,16 @@
       let mood = parseInt(data.mood || "3", 10);
       if (isNaN(mood) || mood < 1 || mood > 5) mood = 3;
 
-      const note = (data.note || "").replace(/^"|"$/g, ""); // strip quotes if any
+      const note = (data.note || "").replace(/^"|"$/g, ""); 
       render(mood, note);
     } catch (e) {
       document.getElementById("label").textContent = "Couldn’t load status.";
-      document.getElementById("sub").textContent = "Check your published CSV link.";
+      document.getElementById("sub").textContent = "Check published CSV link.";
     }
   }
 
   main();
-  // Optional auto-refresh every 30s so friends see changes without reloading
+
   setInterval(main, 30000);
 </script>
 </body>
