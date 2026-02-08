@@ -1,1 +1,107 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Door Status</title>
+  <style>
+    body { font-family: system-ui, Arial; display:flex; justify-content:center; padding:30px; }
+    .card { width: 520px; text-align:center; }
+    .faces { display:flex; justify-content:space-between; gap:14px; margin-bottom:16px; }
+    .face {
+      width: 80px; height: 80px; border-radius: 50%;
+      display:flex; align-items:center; justify-content:center;
+      font-size: 42px;
+      transition: .2s ease;
+    }
+    .inactive { filter: grayscale(1); opacity: .35; }
+    .bar { display:flex; height: 12px; border-radius: 999px; overflow:hidden; }
+    .seg { flex:1; }
+    .seg.inactive { filter: grayscale(1); opacity: .35; }
+    .label { margin-top: 14px; font-size: 18px; font-weight: 600; }
+    .sub { margin-top: 6px; color:#555; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="faces" id="faces"></div>
+    <div class="bar" id="bar"></div>
+    <div class="label" id="label">Loading…</div>
+    <div class="sub" id="sub"></div>
+  </div>
+
+<script>
+  const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1ljnprytFrAxnpwy3rMrIqGzNNSLxOfS6QQ-0UV3IQtg/edit?usp=sharing";
+
+  const moods = [
+    { emoji:"😊", color:"#24c447", text:"Come say hi" },
+    { emoji:"🙂", color:"#9ad61a", text:"Short chat ok" },
+    { emoji:"😐", color:"#ffd000", text:"Only quick question" },
+    { emoji:"☹️", color:"#ff8a00", text:"Not really social" },
+    { emoji:"😡", color:"#e51b1b", text:"Do not disturb" },
+  ];
+
+  function parseCsvTwoCols(csvText) {
+    // expects rows like: mood,3
+    const lines = csvText.trim().split(/\r?\n/);
+    const map = {};
+    for (const line of lines) {
+      const parts = line.split(",");
+      if (parts.length >= 2) {
+        const key = parts[0].trim();
+        const value = parts.slice(1).join(",").trim(); // allows commas in note
+        map[key] = value;
+      }
+    }
+    return map;
+  }
+
+  function render(moodNum, noteText) {
+    const facesEl = document.getElementById("faces");
+    const barEl = document.getElementById("bar");
+    facesEl.innerHTML = "";
+    barEl.innerHTML = "";
+
+    moods.forEach((m, i) => {
+      const idx = i + 1;
+
+      const face = document.createElement("div");
+      face.className = "face" + (idx === moodNum ? "" : " inactive");
+      face.style.background = m.color;
+      face.textContent = m.emoji;
+      facesEl.appendChild(face);
+
+      const seg = document.createElement("div");
+      seg.className = "seg" + (idx === moodNum ? "" : " inactive");
+      seg.style.background = m.color;
+      barEl.appendChild(seg);
+    });
+
+    document.getElementById("label").textContent = `Status: ${moods[moodNum-1].text}`;
+    document.getElementById("sub").textContent = noteText ? noteText : `Updated: ${new Date().toLocaleString()}`;
+  }
+
+  async function main() {
+    try {
+      const res = await fetch(SHEET_CSV_URL, { cache: "no-store" });
+      const csv = await res.text();
+      const data = parseCsvTwoCols(csv);
+
+      let mood = parseInt(data.mood || "3", 10);
+      if (isNaN(mood) || mood < 1 || mood > 5) mood = 3;
+
+      const note = (data.note || "").replace(/^"|"$/g, ""); // strip quotes if any
+      render(mood, note);
+    } catch (e) {
+      document.getElementById("label").textContent = "Couldn’t load status.";
+      document.getElementById("sub").textContent = "Check your published CSV link.";
+    }
+  }
+
+  main();
+  // Optional auto-refresh every 30s so friends see changes without reloading
+  setInterval(main, 30000);
+</script>
+</body>
+</html>
 
