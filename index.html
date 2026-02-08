@@ -34,11 +34,11 @@
   const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRDFsdvACbOujWn3H4VINQTgTtuiqfpBFCknne-WECMnscOVU_71txt6WXIjXOmBhqTmb27GD3G0tDS/pub?output=csv";
 
   const moods = [
-    { emoji:"😊", color:"#24c447", text:"Come say hi" },
+    { emoji:"😊", color:"#24c447", text:"Come socialize with me :)" },
     { emoji:"🙂", color:"#9ad61a", text:"Short chat ok" },
     { emoji:"😐", color:"#ffd000", text:"Only quick question" },
     { emoji:"☹️", color:"#ff8a00", text:"Not really social" },
-    { emoji:"😡", color:"#e51b1b", text:"Do not disturb" },
+    { emoji:"😡", color:"#e51b1b", text:"Do not disturb." },
   ];
 
   function parseCsvTwoCols(csvText) {
@@ -100,7 +100,7 @@
 
   main();
   // Optional auto-refresh every 30s so friends see changes without reloading
-  setInterval(main, 10000);
+  setInterval(main, 30000);
 </script>
 </body>
 </html>
